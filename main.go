@@ -1,7 +1,9 @@
 package main
 
 import (
+	_ "database/sql"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"io/ioutil"
 	"net/http"
 	"rss"
@@ -16,7 +18,7 @@ func main() {
 	)
 
 	// test RSS
-	if resp, err = http.Get("http://blog.wnotes.net/blog/feed/rss"); err != nil {
+	if resp, err = http.Get("http://blog.wnotes.net/blog/feed/atom"); err != nil {
 		fmt.Printf("%v\n", err)
 		return
 	}
@@ -33,11 +35,10 @@ func main() {
 		return
 	}
 
-	parser.Parse()
-
-	// get entries
-	for _, item := range parser.GetEntries() {
-		// TODO: Implement
-		fmt.Printf("%v\n", item)
+	if feeds, err := parser.Parse(); err != nil {
+		fmt.Printf("%v\n", err)
+		return
+	} else {
+		fmt.Printf("%v\n", feeds)
 	}
 }

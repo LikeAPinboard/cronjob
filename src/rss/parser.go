@@ -6,8 +6,7 @@ import (
 )
 
 type RssParser interface {
-	Parse()
-	GetEntries() (entries []RssEntry)
+	Parse() (entries []RssEntry, err error)
 }
 
 type RssEntry struct {
@@ -29,12 +28,12 @@ type AtomType struct {
 
 func NewParser(buffer []byte) (parser RssParser, err error) {
 	rss1 := Rss1Type{}
-	if err := xml.Unmarshal(buffer, &rss1); err == nil && rss1.XMLName.Space != "" {
+	if err := xml.Unmarshal(buffer, &rss1); err == nil && rss1.XMLName.Local != "" {
 		return NewRss1Parser(buffer), nil
 	}
 
 	rss2 := Rss2Type{}
-	if err := xml.Unmarshal(buffer, &rss2); err == nil && rss2.XMLName.Space != "" {
+	if err := xml.Unmarshal(buffer, &rss2); err == nil && rss2.XMLName.Local != "" {
 		return NewRss2Parser(buffer), nil
 	}
 
